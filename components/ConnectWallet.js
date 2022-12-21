@@ -4,9 +4,11 @@ import {
   useAccount,
   useDisconnect,
   useNetwork,
+  useSignMessage,
 } from "wagmi";
 
 import { useWeb3Modal } from '@web3modal/react'
+import { useState } from 'react';
 
 export default function ConnectWallet() {
   // Make sure wagmi client is setup
@@ -14,6 +16,9 @@ export default function ConnectWallet() {
   const { address, isConnected } = useAccount()
   const { chain } = useNetwork()
   const { disconnect } = useDisconnect()
+  const { data, error, isError, isLoading, isSuccess, signMessage, reset } = useSignMessage({
+    message: "Sign message for Wallet Connect integration"
+  })
 
   return (
     <>
@@ -21,7 +26,7 @@ export default function ConnectWallet() {
         Wallet Connect Integration
       </h1>
 
-      <div className={styles.grid}>
+      <div>
         {isConnected ?
           (
             <>
@@ -31,6 +36,19 @@ export default function ConnectWallet() {
               <button onClick={disconnect}>
                 Disconnect
               </button>
+              <div>
+                {data ?
+                  <button onClick={reset}>Sign Out</button>
+                  :
+                  <button disabled={isLoading} onClick={() => {
+                    signMessage()
+                    // Reset if no response in 30s
+                    setTimeout(reset, 30000)
+                  }}>Sign In</button>
+                }
+                {isSuccess && <div>Signature: {data}</div>}
+                {isError && <div>Error signing message: {error.message}</div>}
+              </div>
             </>
           ) :
           (<div onClick={open} className={styles.card}>
@@ -39,6 +57,12 @@ export default function ConnectWallet() {
           )
         }
       </div>
+
+      <style jsx>{`
+        div, button {
+          margin-bottom: 15px;
+        }
+      `}</style>
     </>
   )
 }
