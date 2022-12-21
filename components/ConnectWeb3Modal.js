@@ -22,10 +22,6 @@ export default function ConnectWallet() {
 
   return (
     <>
-      <h1 className={styles.title}>
-        Wallet Connect Integration
-      </h1>
-
       <div>
         {isConnected ?
           (

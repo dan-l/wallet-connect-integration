@@ -7,16 +7,16 @@ import {
   walletConnectProvider,
 } from "@web3modal/ethereum";
 
-import { 
-  configureChains, 
-  createClient, 
+import {
+  configureChains,
+  createClient,
   WagmiConfig
 } from "wagmi";
 
 import { mainnet, goerli } from "wagmi/chains";
 import { Web3Modal } from '@web3modal/react'
 
-import ConnectWallet from '../components/ConnectWallet';
+import WalletConnector from '../components/WalletConnector';
 
 export default function Home() {
   const projectId = process.env.NEXT_PUBLIC_WC_PROJECT_ID
@@ -42,9 +42,13 @@ export default function Home() {
       </Head>
 
       <main>
-      <WagmiConfig client={wagmiClient}>
-        <ConnectWallet />
-      </WagmiConfig>
+        <h1 className={styles.title}>
+          Wallet Connect Integration
+        </h1>
+
+        <WagmiConfig client={wagmiClient}>
+          <WalletConnector />
+        </WagmiConfig>
 
         <Web3Modal
           projectId={projectId}
