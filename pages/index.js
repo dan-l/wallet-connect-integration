@@ -1,7 +1,39 @@
 import Head from 'next/head'
 import styles from '../styles/Home.module.css';
 
+import {
+  EthereumClient,
+  modalConnectors,
+  walletConnectProvider,
+} from "@web3modal/ethereum";
+
+import { 
+  configureChains, 
+  createClient, 
+  WagmiConfig
+} from "wagmi";
+
+import { mainnet, goerli } from "wagmi/chains";
+import { Web3Modal } from '@web3modal/react'
+
+import ConnectWallet from '../components/ConnectWallet';
+
 export default function Home() {
+  const projectId = process.env.NEXT_PUBLIC_WC_PROJECT_ID
+
+  // Wagmi client using wallet connect as provider with supported chains
+  const chains = [mainnet, goerli]
+  const { provider } = configureChains(chains, [
+    walletConnectProvider({ projectId }),
+  ])
+  const wagmiClient = createClient({
+    autoConnect: true,
+    connectors: modalConnectors({ appName: "web3Modal", chains }),
+    provider,
+  })
+  // Web3Modal Ethereum Client
+  const ethereumClient = new EthereumClient(wagmiClient, chains)
+
   return (
     <div className={styles.container}>
       <Head>
@@ -10,16 +42,14 @@ export default function Home() {
       </Head>
 
       <main>
-        <h1 className={styles.title}>
-          Wallet Connect Integration
-        </h1>
+      <WagmiConfig client={wagmiClient}>
+        <ConnectWallet />
+      </WagmiConfig>
 
-        <div className={styles.grid}>
-          <div className={styles.card}>
-            <h3>Connect to Wallet</h3>
-            <p>Ethereum Goerli</p>
-          </div>
-        </div>
+        <Web3Modal
+          projectId={projectId}
+          ethereumClient={ethereumClient}
+        />
       </main>
 
       <footer>
